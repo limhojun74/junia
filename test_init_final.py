@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*- 
 
-################ Server Ver. 24 (2020. 12. 31.) #####################
+################ Server Ver. 25 (2021. 1. 18.) #####################
 
-import sys, os
+import sys, os, ctypes
 import asyncio, discord, aiohttp
 import random, re, datetime, time, logging
 from discord.ext import tasks, commands
@@ -26,6 +26,10 @@ logging.basicConfig(stream=log_stream, level=logging.WARNING)
 #handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
 #ilsanglog.addHandler(handler)
 #####################################################
+
+if not discord.opus.is_loaded():
+	discord.opus.load_opus(ctypes.util.find_library('opus'))
+	print("opus_loaded")
 
 basicSetting = []
 bossData = []
@@ -565,8 +569,9 @@ async def MakeSound(saveSTR, filename):
 async def PlaySound(voiceclient, filename):
 	if basicSetting[21] != "1":
 		return
-
-	source = discord.FFmpegPCMAudio(filename)
+		
+	ffmpeg_options = {'options': '-vn'}
+	source = discord.FFmpegPCMAudio(filename, **ffmpeg_options)
 	try:
 		voiceclient.play(source)
 	except discord.errors.ClientException:
@@ -1359,7 +1364,7 @@ class mainCog(commands.Cog):
 	async def setting_(self, ctx):	
 		#print (ctx.message.channel.id)
 		if ctx.message.channel.id == basicSetting[7]:
-			setting_val = '보탐봇버전 : Server Ver. 24 (2020. 12. 31.)\n'
+			setting_val = '보탐봇버전 : Server Ver. 25 (2021. 1. 18.)\n'
 			if basicSetting[6] != "" :
 				setting_val += '음성채널 : ' + self.bot.get_channel(basicSetting[6]).name + '\n'
 			setting_val += '텍스트채널 : ' + self.bot.get_channel(basicSetting[7]).name +'\n'
